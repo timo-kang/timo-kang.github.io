@@ -3,7 +3,6 @@ layout: post
 title: "HBR Guide to Your Professional Growth"
 description: "A book review of 'HBR Guide to Your Professional Growth'"
 ---
-# HBR Guide to Your Professional Growth
 
 ### Book Review
 **Authors**: Harvard Business Review
