@@ -1,0 +1,793 @@
+---
+layout: null
+permalink: /unitree-go2-robot/
+---
+<!DOCTYPE html><html><head>
+<meta charset="utf-8" data-cid="6Oa3Sj">
+<meta content="width=device-width, initial-scale=1.0" name="viewport" data-cid="T9L8uX">
+<title data-cid="vnJyFH">Unitree Go2 Robot Process Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js" data-cid="RvG3zN"></script>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic" rel="stylesheet" data-cid="5YLamg">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css" rel="stylesheet" data-cid="ig35ws">
+<link href="https://us-tiangong-data.oss-accelerate.aliyuncs.com/doc/new_color_css/blue_v2.css?OSSAccessKeyId=LTAI5tGmBYBVtG6Cxb4BaviJ&amp;Expires=33299356499&amp;Signature=YGVaTE9YLO97otxLx%2FGBU8pQEr4%3D" rel="stylesheet" data-cid="1SNptZ">
+<link href="https://us-tiangong-data.oss-accelerate.aliyuncs.com/doc/css_ans_js/milligram.css?OSSAccessKeyId=LTAI5tGmBYBVtG6Cxb4BaviJ&amp;Expires=4912738754&amp;Signature=Ss6zSQ5tBYKMmeW%2FYRxHhLIyFkQ%3D" rel="stylesheet" data-cid="xDshi0">
+<script src="https://us-tiangong-data.oss-accelerate.aliyuncs.com/doc/css_ans_js/macarons.js?OSSAccessKeyId=LTAI5tGmBYBVtG6Cxb4BaviJ&amp;Expires=4912738769&amp;Signature=gR5ZiVxw6PRq8chCT8htIYqZRfo%3D" data-cid="HztDTN"></script>
+<style data-cid="J24GQ0">
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0px auto;
+            padding: 24px 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1, h2, h3 {
+            line-height: 1.3;
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            scroll-margin-top: 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2em;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 1.8em;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 1.4em;
+        }
+        p {
+            margin-bottom: 1em;
+        }
+        a {
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 0.5em;
+        }
+        code {
+            background-color: #f0f0f0;
+            padding: 0.2em 0.4em;
+            margin: 0;
+            font-size: 85%;
+            border-radius: 3px;
+        }
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            font-size: 100%;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.5em 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+        th, td {
+            padding: 10px;
+        }
+        th {
+            font-weight: bold;
+        }
+        #toc {
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px 25px;
+            margin-bottom: 2em;
+        }
+        #toc h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        #toc ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+        #toc ul ul {
+            padding-left: 25px;
+        }
+        #toc li {
+            margin-bottom: 8px;
+        }
+        .chart-wrapper {
+            width: 100%;
+            height: 450px;
+            margin: 20px 0;
+        }
+        .data-source {
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: -15px;
+            margin-bottom: 30px;
+        }
+    </style>
+<link rel="stylesheet" href="https://static.skywork.ai/fe/skywork-site-assets/styles/doc_reference_style.css?v=2013166745579888640" data-cid="ybQsYR">
+</head><body>
+<div class="container" data-cid="Env8lY">
+<h1 id="section-unitree-go2-robot-process-architecture" data-cid="g748tJ">Unitree Go2 Robot Process Architecture</h1>
+<nav id="toc" data-cid="QdQ4h1">
+<div class="toc-title" data-cid="gashgA">Table of Contents</div>
+<ul data-cid="5JmTRH">
+<li data-cid="6ANLm2"><a href="#section-overview-of-the-unitree-go2-robot-architecture" data-cid="zfbuNg">Overview of the Unitree Go2 Robot Architecture</a></li>
+<li data-cid="S2gfqq"><a href="#section-processes-running-on-the-unitree-go2-hardware" data-cid="GaqTBo">Processes Running on the Unitree Go2 Hardware</a>
+<ul data-cid="tFAxLd">
+<li data-cid="kiilGW"><a href="#section-motor-controller-processes" data-cid="Yo30tt">Motor Controller Processes</a></li>
+<li data-cid="epOJZ2"><a href="#section-motion-control-processes" data-cid="QABmO5">Motion Control Processes</a></li>
+<li data-cid="LYVmJY"><a href="#section-perception-processes" data-cid="SewbrX">Perception Processes</a></li>
+<li data-cid="bm8B2R"><a href="#section-ai-and-computation-processes" data-cid="NlHyLi">AI and Computation Processes</a></li>
+<li data-cid="gSrUze"><a href="#section-communication-and-control-processes" data-cid="8xCByj">Communication and Control Processes</a></li>
+</ul>
+</li>
+<li data-cid="Kihnrl"><a href="#section-bounded-contexts-and-inter-process-communication" data-cid="VxJ1tR">Bounded Contexts and Inter-Process Communication</a></li>
+<li data-cid="8OcopR"><a href="#section-key-features-of-the-unitree-go2-robot" data-cid="j4l7tD">Key Features of the Unitree Go2 Robot</a><em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="Key Features of the Unitree Go2 Robot" id="skTag-2013165946909442051" class="sk-source-tag" data-sk-source-id="2013165946909442051" data-sk-source-website-name="mybotshop.de" data-sk-source-website-url="https://forum.mybotshop.de/t/unitree-go1-comparing-go1-and-go2/1076" data-sk-source-source-id="2013165946900774914" data-cid="S4MUUq" style="--sk-source-display-name: &quot;mybotshop.de&quot;;"></em></li>
+<li data-cid="wdAlTK"><a href="#section-core-scientific-and-academic-concepts" data-cid="uZgQFo">Core Scientific and Academic Concepts</a></li>
+</ul>
+</nav>
+<h2 id="section-overview-of-the-unitree-go2-robot-architecture" data-cid="BffeeI">Overview of the Unitree Go2 Robot Architecture</h2>
+<p data-cid="3VWPuz">The Unitree Go2 is a high-performance quadruped robot built for agility and autonomy<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The Unitree Go2 is a high-performance quadruped robot built for agility and autonomy." id="skTag-2013165946940301312" class="sk-source-tag" data-sk-source-id="2013165946940301312" data-sk-source-website-name="unitree.com" data-sk-source-website-url="https://www.unitree.com/" data-sk-source-source-id="2013165946938523648" data-cid="KVR0z0" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>. It consists of a <strong data-cid="AFmIsj">mechanical structure</strong> (four legs, body, head) and an <strong data-cid="u4gNBw">electronics stack</strong> with a distributed control system. The Go2’s architecture is modular, with separate hardware and software components working in harmony. The diagram below illustrates a high-level view of this modular design, showing the main components and their interconnections.</p>
+<div class="chart-wrapper" id="chart1" data-cid="GMAZkw" style="user-select: none;" _echarts_instance_="ec_1768811815606"><div style="position: relative; width: 706px; height: 450px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;" data-cid="NntnBB"><canvas style="position: absolute; left: 0px; top: 0px; width: 706px; height: 450px; user-select: none; padding: 0px; margin: 0px; border-width: 0px;" data-zr-dom-id="zr_0" width="706" height="450" data-cid="EApThy"></canvas></div></div>
+<div class="data-source" data-cid="WXlWJq">Data Source: <em data-ref-id="2013166728211275776" data-sk-source-type="model" data-sk-source-id="2013166728211275776" data-sk-source-text="Data Source:" class="sk-source-tag" data-skywork="text_badge" data-cid="njsI5B" style="--sk-source-display-name: &quot;wso2.com&quot;;"></em>, <em data-ref-id="2013166728211275777" data-cid="NxKHFd"></em></div>
+<p data-cid="CLVKWt">Core hardware components include: <strong data-cid="kFjmIz">joint motors</strong> with built-in controllers, an <strong data-cid="sEtbQB">embedded PC</strong> for AI and perception, and various sensors (IMU, cameras, LiDAR, microphones). The software architecture is designed to run on multiple threads or processes that handle different aspects of the robot’s operation (motor control, motion control, perception, AI, etc.). These processes communicate via message passing or shared memory, ensuring the robot can react quickly to sensor inputs and control commands.</p>
+<h2 id="section-processes-running-on-the-unitree-go2-hardware" data-cid="Pxi1fP">Processes Running on the Unitree Go2 Hardware</h2>
+<p data-cid="2rBonW">The Unitree Go2’s software is executed on a combination of on-board processors and edge computing units<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The Unitree Go2’s software is executed on a combination of on-board processors and edge computing units." id="skTag-2013165946909442051" class="sk-source-tag" data-sk-source-id="2013165946909442051" data-sk-source-website-name="mybotshop.de" data-sk-source-website-url="https://forum.mybotshop.de/t/unitree-go1-comparing-go1-and-go2/1076" data-sk-source-source-id="2013165946900774914" data-cid="v9Mo4C" style="--sk-source-display-name: &quot;mybotshop.de&quot;;"></em>. Below we detail the main processes or software modules that run on the robot and their responsibilities:</p>
+<h3 id="section-motor-controller-processes" data-cid="pE79Iy">Motor Controller Processes</h3>
+<p data-cid="SbIdwt">At the lowest level, each leg’s joint motor has a dedicated <strong data-cid="B2B57g">motor controller</strong> process (typically implemented on a microcontroller or FPGA within the motor unit). These controllers are responsible for <strong data-cid="hC4R4F">real-time control of motor position, velocity, and torque</strong>. They execute low-level control algorithms (such as PID or Field-Oriented Control) to achieve precise motion of each joint. The motor controllers continuously read encoder feedback and apply control commands (position setpoints or torque commands) to the motor coils. They operate at high frequency (on the order of 1 kHz or more) to ensure smooth and responsive joint movements. This distributed control ensures that even if one motor fails, the others can continue to operate (with degraded functionality).</p>
+<p data-cid="W7Lce2">On the Go2, Unitree’s motor controllers are based on custom hardware and firmware. For example, each leg uses a brushless DC (BLDC) motor with integrated drivers. The Go2’s joint motors have a peak torque of 45 N·m <em data-ref-id="2013166728211275778" class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-sk-source-id="2013166728211275778" data-sk-source-text="On the Go2, Unitree’s motor controllers are based on custom hardware and firmware. For example, each leg uses a brushless DC (BLDC) motor with integrated drivers. The Go2’s joint motors have a peak torque of 45 N·m" data-cid="hhHizX" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>, and the controllers use <strong data-cid="Pe7x1G">Field-Oriented Control (FOC)</strong> to achieve high-performance torque control <em data-ref-id="2013166728211275779" class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-sk-source-id="2013166728211275779" data-sk-source-text=", and the controllers use Field-Oriented Control (FOC) to achieve high-performance torque control" data-cid="opR8kn" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>. These controllers are programmed to run autonomously with minimal external intervention, focusing solely on their joint’s dynamics. A diagram of this low-level control loop illustrates how the motor controller processes continuously adjust the motor’s behavior based on feedback.</p>
+<div class="chart-wrapper" id="chart3" data-cid="FDZED6" style="user-select: none;" _echarts_instance_="ec_1768811815608"><div style="position: relative; width: 706px; height: 450px; padding: 0px; margin: 0px; border-width: 0px; cursor: pointer;" data-cid="97GwTI"><canvas style="position: absolute; left: 0px; top: 0px; width: 706px; height: 450px; user-select: none; padding: 0px; margin: 0px; border-width: 0px;" data-zr-dom-id="zr_0" width="706" height="450" data-cid="Br53qN"></canvas></div></div>
+<div class="data-source" data-cid="8biqpL">Data Source: <em data-ref-id="2013166728211275780" data-sk-source-type="model" data-sk-source-id="2013166728211275780" data-sk-source-text="Data Source:" class="sk-source-tag" data-skywork="text_badge" data-cid="7urPKv" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>, <em data-ref-id="2013166728211275781" data-sk-source-id="2013166728211275781" data-sk-source-text="," class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-cid="Bbu3AD" style="--sk-source-display-name: &quot;simplexitypd.com&quot;;"></em></div>
+<h3 id="section-motion-control-processes" data-cid="xUoaBW">Motion Control Processes</h3>
+<p data-cid="edIQmW">Above the motor controllers, a <strong data-cid="NCuk1J">motion control process</strong> (often running on a main CPU) handles the robot’s gait generation and overall locomotion. This process is responsible for higher-level commands such as walking, running, and standing. It typically runs at a lower frequency (around 10–100 Hz) compared to the motor controllers. The motion control module takes <strong data-cid="GXX2PE">high-level commands</strong> (e.g. move forward at X speed, or execute a specific gait pattern) and translates them into joint position or torque trajectories for the motors. It uses algorithms like <strong data-cid="RqstgN">inverse kinematics</strong> to compute the desired joint angles for the legs to achieve a given body pose, and <strong data-cid="R8Qqhh">gait generation algorithms</strong> (like ZMP-based balance control or Central Pattern Generators) to ensure stable walking. Additionally, the motion control process manages the robot’s posture and balance – adjusting leg movements in real time to compensate for disturbances or terrain changes. It interfaces with the perception system to incorporate obstacle avoidance and terrain adaptation into its motion plans.</p>
+<p data-cid="7ykgVa">Unitree’s motion control is built on a <strong data-cid="vzwhtQ">hierarchical control framework</strong><em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="Unitree’s motion control is built on a hierarchical control framework." id="skTag-2013166012456837124" class="sk-source-tag" data-sk-source-id="2013166012456837124" data-sk-source-website-name="github.com" data-sk-source-website-url="https://github.com/unitreerobotics/unitree_ros2" data-sk-source-source-id="2013166012449357826" data-cid="zFCjLe" style="--sk-source-display-name: &quot;github.com&quot;;"></em>. For example, the robot can be in different <strong data-cid="1Qo2zf">gait modes</strong> (e.g. walking, running, dance, etc.), each handled by its own sub-process or state machine. The high-level motion controller might coordinate these modes, switching between them based on the robot’s task or the user’s commands. This modular approach allows adding new gaits or behaviors by implementing new processes or modules that plug into the motion control system. The motion control process also receives feedback from the IMU and foot force sensors to adjust the robot’s balance<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The motion control process also receives feedback from the IMU and foot force sensors to adjust the robot’s balance." id="skTag-2013166092858003459" class="sk-source-tag" data-sk-source-id="2013166092858003459" data-sk-source-website-name="jhu.edu" data-sk-source-website-url="https://me.jhu.edu/wp-content/uploads/2024/09/Robotics-Sample-Co-Op-Essay.pdf" data-sk-source-source-id="2013166092845776896" data-cid="IWOmVu" style="--sk-source-display-name: &quot;jhu.edu&quot;;"></em>. In summary, the motion control processes ensure the robot can move dynamically (walking, running, jumping) while maintaining stability, using algorithms that are tuned for the Go2’s specific capabilities.</p>
+<h3 id="section-perception-processes" data-cid="QlKgXv">Perception Processes</h3>
+<p data-cid="EB2iVW">The perception layer on the Go2 runs processes dedicated to <strong data-cid="jSsO9l">sensing and understanding the environment</strong><em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The perception layer on the Go2 runs processes dedicated to sensing and understanding the environment." id="skTag-2013166012341448706" class="sk-source-tag" data-sk-source-id="2013166012341448706" data-sk-source-website-name="springer.com" data-sk-source-website-url="https://link.springer.com/content/pdf/10.1007/978-981-96-0789-1_6.pdf?pdf=inline%20link" data-sk-source-source-id="2013166012336111617" data-cid="gJaSuY" style="--sk-source-display-name: &quot;springer.com&quot;;"></em>. Key perception modules include: <strong data-cid="sdvcak">LiDAR processing</strong>, <strong data-cid="2VRFXF">camera image processing</strong>, and <strong data-cid="3gqKBC">IMU/state estimation</strong>. These processes run on the embedded PC or edge computer and use the robot’s sensors to gather data<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="These processes run on the embedded PC or edge computer and use the robot’s sensors to gather data." id="skTag-2013166297409462307" class="sk-source-tag" data-sk-source-id="2013166297409462307" data-sk-source-website-name="arxiv.org" data-sk-source-website-url="https://arxiv.org/html/2411.11483v1" data-sk-source-source-id="2013166297393594368" data-cid="xchbBg" style="--sk-source-display-name: &quot;arxiv.org&quot;;"></em>. For instance, the Go2 is equipped with a 4D LiDAR (Unitree’s L1) that provides 360° x 90° field-of-view <em data-ref-id="2013166728211275782" class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-sk-source-id="2013166728211275782" data-sk-source-text="The perception layer on the Go2 runs processes dedicated to sensing and understanding the environment . Key perception modules include: LiDAR processing , camera image processing , and IMU/state estimation . These processes run on the embedded PC or edge computer and use the robot’s sensors to gather data. For instance, the Go2 is equipped with a 4D LiDAR (Unitree’s L1) that provides 360° x 90° field-of-view" data-cid="NpJXFH" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>. A <strong data-cid="rPQ67G">LiDAR processing process</strong> is responsible for reading the raw LiDAR point cloud data and converting it into a useful representation (like obstacle maps or depth images). This process might perform real-time filtering, segmentation, and mapping. Similarly, a <strong data-cid="p4wEzz">vision processing process</strong> handles camera inputs (e.g. stereo cameras or a single RGB camera) to detect objects, recognize faces, or interpret the surroundings. It could use computer vision algorithms (object detection, image segmentation) to identify obstacles or people in the robot’s path.</p>
+<p data-cid="2m5y5p">Another important perception process is the <strong data-cid="jcL8QN">state estimation filter</strong>. This process continuously estimates the robot’s pose and velocity using sensor fusion<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="This process continuously estimates the robot’s pose and velocity using sensor fusion." id="skTag-2013166179117506571" class="sk-source-tag" data-sk-source-id="2013166179117506571" data-sk-source-website-name="mathworks.com" data-sk-source-website-url="https://www.mathworks.com/help/fusion/gs/determine-orientation-through-sensor-fusion.html" data-sk-source-source-id="2013166179101638656" data-cid="0tJ83M" style="--sk-source-display-name: &quot;mathworks.com&quot;;"></em>. It typically uses an <strong data-cid="W3rDJz">Extended Kalman Filter (EKF)</strong> or <strong data-cid="JDujmO">Complementary Filter</strong> that fuses data from the IMU, wheel encoders (if any), and sometimes vision or LiDAR measurements. The goal is to provide accurate state information (position, orientation, velocity) even when individual sensors are noisy or unreliable. For example, the EKF can combine the IMU’s acceleration and gyro data with wheel odometry to estimate the robot’s movement over time. This estimated state is used by the higher-level control processes to make informed decisions. The perception processes run in parallel, each updating at their own rates. The LiDAR and camera processing might run at 10–20 Hz, while the state estimation filter runs at a few hundred Hz. All these perception processes feed information into the control system, enabling the robot to perceive its environment and adjust its actions accordingly.</p>
+<h3 id="section-ai-and-computation-processes" data-cid="fGMSTz">AI and Computation Processes</h3>
+<p data-cid="V6xNAl">The Unitree Go2 is equipped with an embedded AI computing unit (often a Jetson or similar) that runs higher-level artificial intelligence processes<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The Unitree Go2 is equipped with an embedded AI computing unit (often a Jetson or similar) that runs higher-level artificial intelligence processes." id="skTag-2013165946909442051" class="sk-source-tag" data-sk-source-id="2013165946909442051" data-sk-source-website-name="mybotshop.de" data-sk-source-website-url="https://forum.mybotshop.de/t/unitree-go1-comparing-go1-and-go2/1076" data-sk-source-source-id="2013165946900774914" data-cid="3uRpjY" style="--sk-source-display-name: &quot;mybotshop.de&quot;;"></em>. These include <strong data-cid="Qq4lYf">AI inference engines</strong>, <strong data-cid="O9FOvV">machine learning models</strong>, and <strong data-cid="kV7PND">task-level decision processes</strong>. One key process is the <strong data-cid="P44yZm">AI module</strong> that can execute models for tasks like object recognition, gesture recognition, or even reinforcement learning. For example, the robot can be programmed to recognize voice commands or follow a person – these functions rely on AI models running on the robot. The AI process might interface with cloud services via the robot’s network (if connected) to offload complex computations or receive updates. However, many AI tasks are performed on-board to ensure real-time operation.</p>
+<p data-cid="zBamTe">Another important aspect is the <strong data-cid="DXgENE">robot’s OS and runtime</strong>. The Go2 likely runs a real-time operating system (RTOS) or a Linux-based system with real-time extensions. The <strong data-cid="dCeFR1">RTOS process</strong> manages the scheduling of all the lower-level tasks (motor controllers, etc.) to ensure they meet timing constraints. In a Linux context, this might involve using <strong data-cid="bRsi7t">POSIX threads with real-time priorities</strong> or <strong data-cid="cyJbaB">preempt-rt patches</strong> to ensure the motor control loops get the CPU time they need. The RTOS ensures that critical processes (like the motor controllers) are scheduled first and can’t be starved by other tasks. This is crucial for maintaining the robot’s stability.</p>
+<p data-cid="UGO1nj">The AI and computation processes also include <strong data-cid="W14TU9">communication and control logic</strong> that allows external users or other robots to interact with the Go2<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The AI and computation processes also include communication and control logic that allows external users or other robots to interact with the Go2." id="skTag-2013166092641398787" class="sk-source-tag" data-sk-source-id="2013166092641398787" data-sk-source-website-name="github.com" data-sk-source-website-url="https://github.com/unitreerobotics/unitree_ros2" data-sk-source-source-id="2013166092631867392" data-cid="TJM9vs" style="--sk-source-display-name: &quot;github.com&quot;;"></em>. For instance, the robot might run a <strong data-cid="UPLajz">Web server</strong> process that provides an API for remote control or status monitoring <em data-ref-id="2013166728211275783" data-sk-source-type="model" data-sk-source-id="2013166728211275783" data-sk-source-text="The AI and computation processes also include communication and control logic that allows external users or other robots to interact with the Go2. For instance, the robot might run a Web server process that provides an API for remote control or status monitoring" class="sk-source-tag" data-skywork="text_badge" data-cid="4of9OU" style="--sk-source-display-name: &quot;quadruped.de&quot;;"></em>. It could also run a <strong data-cid="OHlaRD">communication service</strong> (using protocols like ROS or DDS) to receive high-level commands or send sensor data. These processes ensure that the Go2 can be controlled via a smartphone app, a remote controller, or even other robots in a swarm.</p>
+<h3 id="section-communication-and-control-processes" data-cid="vDC7zv">Communication and Control Processes</h3>
+<p data-cid="GTMYdo">Communication is a critical part of the Unitree Go2’s architecture. The robot has multiple communication processes to facilitate control and data exchange. On-board, there is likely a <strong data-cid="5BARoC">local communication bus</strong> (such as CAN or Ethernet) connecting the motor controllers to the main computer. The <strong data-cid="ZPmX1J">CAN bus process</strong> on the main computer reads data from the motor controllers (e.g. joint positions, currents) and sends control commands back. This process ensures low-latency communication between the main CPU and the motors. Additionally, the Go2 supports wireless communication for user control and network connectivity. For example, it can connect to a smartphone app via Wi-Fi or Bluetooth. A <strong data-cid="CIDm2L">wireless communication process</strong> handles the app’s control signals and status updates, allowing users to send commands (like walking or performing tricks) and receive sensor data in real time. This process might also handle voice command processing if the robot has a microphone – interpreting spoken commands and triggering actions.<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="This process might also handle voice command processing if the robot has a microphone – interpreting spoken commands and triggering actions." id="skTag-2013165983044870209" class="sk-source-tag" data-sk-source-id="2013165983044870209" data-sk-source-website-name="quadruped.de" data-sk-source-website-url="https://www.docs.quadruped.de/projects/go2/html/controller.html" data-sk-source-source-id="2013165983030509568" data-cid="euNKb0" style="--sk-source-display-name: &quot;quadruped.de&quot;;"></em></p>
+<p data-cid="kQfH0r">For developers, Unitree provides SDKs and APIs to communicate with the robot. The Unitree SDK (software development kit) allows external programs to send high-level commands to the robot (e.g. walk at a certain speed) or to receive data (like sensor readings) <em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The Unitree SDK (software development kit) allows external programs to send high-level commands to the robot (e.g. walk at a certain speed) or to receive data (like sensor readings) ." id="skTag-2013166328701657088" class="sk-source-tag" data-sk-source-id="2013166328701657088" data-sk-source-website-name="unitree.com" data-sk-source-website-url="https://support.unitree.com/home/en/developer/Obtain%20SDK" data-sk-source-source-id="2013166328699879424" data-cid="vtIh3i" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>. This SDK is a set of libraries and example code that run on the user’s computer or another robot<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="This SDK is a set of libraries and example code that run on the user’s computer or another robot." id="skTag-2013166092820889601" class="sk-source-tag" data-sk-source-id="2013166092820889601" data-sk-source-website-name="github.com" data-sk-source-website-url="https://github.com/abizovnuralem/go2_ros2_sdk" data-sk-source-source-id="2013166092808028160" data-cid="x8TmS2" style="--sk-source-display-name: &quot;github.com&quot;;"></em>. It typically uses TCP/IP or UDP communication over the network. The <strong data-cid="dbuquU">SDK process</strong> on the Go2 receives these commands and translates them into actions. Similarly, if using ROS (Robot Operating System), the Go2 can run ROS nodes that publish sensor topics and subscribe to command topics. The <strong data-cid="tSMpx7">ROS node process</strong> is responsible for mapping ROS messages to the robot’s internal control and data structures. This allows integration with ROS-based software stacks (for navigation, SLAM, etc.).</p>
+<p data-cid="PqwD7v">Finally, the Go2 has <strong data-cid="1EG8Rs">processes for autonomous control</strong> that handle decision-making. For example, if the robot is in an autonomous navigation mode, there might be a <strong data-cid="EBjLvj">navigation process</strong> that takes sensor inputs (like the LiDAR map and estimated position) and computes a path. This process might use algorithms like A* for path planning and send velocity commands to the motion control process to follow the path. If obstacle avoidance is needed, another process can react to the LiDAR or camera data, quickly adjusting the robot’s movement to avoid collisions. All these processes work together to form a coordinated system: sensors feed data into the perception and state estimation processes, which in turn feed into the control processes that send commands to the motors.</p>
+<h2 id="section-bounded-contexts-and-inter-process-communication" data-cid="tc2JNn">Bounded Contexts and Inter-Process Communication</h2>
+<p data-cid="RrfuhW">The Unitree Go2’s architecture can be thought of as a collection of <strong data-cid="gMgoBM">bounded contexts</strong> – separate, specialized software modules each handling a distinct responsibility. Each bounded context (e.g. motor control, motion control, perception, etc.) operates with its own data and logic, and communicates with other contexts through well-defined interfaces. This modular design makes the system scalable and maintainable, as changes in one context (like improving the gait algorithm) can be made without affecting others, as long as the communication interface remains consistent.</p>
+<p data-cid="N8KOlT">The communication between these processes is achieved through <strong data-cid="22Tt9H">inter-process communication (IPC)</strong> mechanisms. In the Go2’s case, IPC is handled via a combination of low-level hardware buses and high-level software protocols. At the hardware level, each motor controller is a separate bounded context that communicates with the main processor over a dedicated bus (CAN bus or similar). This direct communication ensures that motor commands are sent with minimal latency<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="This direct communication ensures that motor commands are sent with minimal latency." id="skTag-2013166179034173458" class="sk-source-tag" data-sk-source-id="2013166179034173458" data-sk-source-website-name="pmdcorp.com" data-sk-source-website-url="https://www.pmdcorp.com/resources/type/articles/get/field-oriented-control-foc-a-deep-dive-article" data-sk-source-source-id="2013166179021946880" data-cid="YwoJUp" style="--sk-source-display-name: &quot;pmdcorp.com&quot;;"></em>. At the software level, the main CPU uses <strong data-cid="HihDfJ">message passing</strong> to coordinate tasks. For example, when the motion control process needs to update the leg positions, it sends a message to the motor control process specifying the target angles or forces. The motor control process then updates the motor controllers accordingly. This message passing can be implemented using a <strong data-cid="AE0lJS">publish-subscribe</strong> or <strong data-cid="KzSEUY">client-server</strong> pattern. Unitree’s SDK and ROS interfaces abstract some of this IPC, but internally, the robot’s processes use efficient communication to avoid bottlenecks.</p>
+<p data-cid="jLDbNU">Another important aspect of bounded contexts is the concept of <strong data-cid="1WySgS">data ownership</strong> and <strong data-cid="BynPwE">coordination</strong>. Each context has its own data structures (for example, the perception context owns the LiDAR point cloud data, the motion context owns the current target gait parameters). When one context needs data from another, it requests it via the interface. For instance, the navigation context might request the current estimated position from the state estimation context to plan a path. The communication between contexts is usually asynchronous, allowing the sender to continue without waiting for a response (unless a synchronous call is needed, like an immediate stop command).</p>
+<p data-cid="f71dtm">In summary, the Unitree Go2’s architecture is divided into clear bounded contexts with well-defined communication. This structure ensures that each part of the robot’s operation is isolated and can be optimized independently. It also allows the robot to handle complex tasks by breaking them into manageable sub-tasks, each handled by a specialized process. The IPC mechanisms (both hardware and software) ensure that these contexts can exchange information in a timely and reliable manner, enabling the robot to react to its environment and execute commands with precision.</p>
+<h2 id="section-key-features-of-the-unitree-go2-robot" data-cid="PwoP3y">Key Features of the Unitree Go2 Robot</h2>
+<p data-cid="QwVGQF">The Unitree Go2 is packed with advanced features that set it apart<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The Unitree Go2 is packed with advanced features that set it apart." id="skTag-2013166212666236933" class="sk-source-tag" data-sk-source-id="2013166212666236933" data-sk-source-website-name="reddit.com" data-sk-source-website-url="https://www.reddit.com/r/Connecticut/comments/1mvj6mq/drone_dog_added_as_newest_member_of_enfield/" data-sk-source-source-id="2013166212660264964" data-cid="FANvLh" style="--sk-source-display-name: &quot;reddit.com&quot;;"></em>. Below are some of the key features of the Go2:</p>
+<ul data-cid="paU8XM">
+<li data-cid="UZG2hm"><strong data-cid="ACggTI">High Mobility:</strong> The Go2 can walk, run, jump, and even perform dynamic moves like climbing stairs or doing a handstand. It has a top speed of about 2.5 m/s <em data-ref-id="2013166728211275785" data-sk-source-type="model" data-sk-source-id="2013166728211275785" data-sk-source-text="High Mobility: The Go2 can walk, run, jump, and even perform dynamic moves like climbing stairs or doing a handstand. It has a top speed of about 2.5 m/s" class="sk-source-tag" data-skywork="text_badge" data-cid="C6ywFD" style="--sk-source-display-name: &quot;roboworks.net&quot;;"></em> and can leap up to 0.3 meters<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="It has a top speed of about 2.5 m/s and can leap up to 0.3 meters." id="skTag-2013165946759311360" class="sk-source-tag" data-sk-source-id="2013165946759311360" data-sk-source-website-name="roboworks.net" data-sk-source-website-url="https://www.roboworks.net/store/p/unitree-go2" data-sk-source-source-id="2013165946749779970" data-cid="EkGyQo" style="--sk-source-display-name: &quot;roboworks.net&quot;;"></em>. Its lightweight (≈15 kg) body and powerful joint motors (peak torque 45 N·m) enable these feats <em data-ref-id="2013166728211275786" class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-sk-source-id="2013166728211275786" data-sk-source-text="and can leap up to 0.3 meters. Its lightweight (≈15 kg) body and powerful joint motors (peak torque 45 N·m) enable these feats" data-cid="SoKNvi" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>. The robot’s gait algorithms are tuned for stability, allowing it to maintain balance on uneven terrain.</li>
+<li data-cid="aO6EI5"><strong data-cid="ijAMeN">Intelligent Obstacle Avoidance:</strong> Equipped with a state-of-the-art LiDAR and vision system, the Go2 can autonomously detect and avoid obstacles. Its 4D LiDAR (360° x 90° field of view) provides a wide field of vision with minimal blind spots <em data-ref-id="2013166728211275787" class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-sk-source-id="2013166728211275787" data-sk-source-text="Intelligent Obstacle Avoidance: Equipped with a state-of-the-art LiDAR and vision system, the Go2 can autonomously detect and avoid obstacles. Its 4D LiDAR (360° x 90° field of view) provides a wide field of vision with minimal blind spots" data-cid="C8GPpL" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>. The robot’s perception software can detect objects in real-time and plan detours to navigate around them<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The robot’s perception software can detect objects in real-time and plan detours to navigate around them." id="skTag-2013165946795560962" class="sk-source-tag" data-sk-source-id="2013165946795560962" data-sk-source-website-name="quadruped.de" data-sk-source-website-url="https://www.docs.quadruped.de/projects/go2/html/controller.html" data-sk-source-source-id="2013165946787528706" data-cid="uvYZEV" style="--sk-source-display-name: &quot;quadruped.de&quot;;"></em>. This feature is crucial for safety and autonomy. Notably, the Go2’s obstacle avoidance has been reported to be <strong data-cid="y0W7kR">200% more efficient</strong> than previous models, thanks to its advanced AI-based perception <em data-ref-id="2013166728211275788" data-sk-source-text=". The robot’s perception software can detect objects in real-time and plan detours to navigate around them. This feature is crucial for safety and autonomy. Notably, the Go2’s obstacle avoidance has been reported to be 200% more efficient than previous models, thanks to its advanced AI-based perception" class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-sk-source-id="2013166728211275788" data-cid="dZz7s1" style="--sk-source-display-name: &quot;robozaps.com&quot;;"></em>.</li>
+<li data-cid="FEffVz"><strong data-cid="45lDNo">Advanced Sensors:</strong> The Go2 is equipped with multiple sensors for perception and control<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="Advanced Sensors: The Go2 is equipped with multiple sensors for perception and control." id="skTag-2013166212813037574" class="sk-source-tag" data-sk-source-id="2013166212813037574" data-sk-source-website-name="unboxindustry.com" data-sk-source-website-url="https://www.unboxindustry.com/blog/125-unitree-go2-quadrupedal-robotics?srsltid=AfmBOoomy8un9F634npv2dlAKN_HeEr41VhsJxuFRPacgQNLnoRSq7t1" data-sk-source-source-id="2013166212807065604" data-cid="AJnVka" style="--sk-source-display-name: &quot;unboxindustry.com&quot;;"></em>. It has an IMU for orientation and acceleration, foot force sensors to measure ground reaction forces, and microphones for voice recognition. It also features two front-facing cameras and a 4D LiDAR for environmental mapping and object detection<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="It also features two front-facing cameras and a 4D LiDAR for environmental mapping and object detection." id="skTag-2013166212808843264" class="sk-source-tag" data-sk-source-id="2013166212808843264" data-sk-source-website-name="unitree.com" data-sk-source-website-url="https://www.unitree.com/go2" data-sk-source-source-id="2013166212807065600" data-cid="AE9cV5" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>. These sensors provide rich data that the robot’s software uses to understand its surroundings and adjust its movements.<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="These sensors provide rich data that the robot’s software uses to understand its surroundings and adjust its movements." id="skTag-2013166297409462302" class="sk-source-tag" data-sk-source-id="2013166297409462302" data-sk-source-website-name="arxiv.org" data-sk-source-website-url="https://arxiv.org/html/2411.11483v1" data-sk-source-source-id="2013166297393594368" data-cid="4FaDQW" style="--sk-source-display-name: &quot;arxiv.org&quot;;"></em></li>
+<li data-cid="E8oYtp"><strong data-cid="HTwsul">AI Integration:</strong> The Go2 comes with an AI computing module that can run machine learning models for tasks like object recognition, gesture recognition, and voice commands. It can learn from its environment and adapt its behavior over time<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="It can learn from its environment and adapt its behavior over time." id="skTag-2013166012417581059" class="sk-source-tag" data-sk-source-id="2013166012417581059" data-sk-source-website-name="droneblocks.io" data-sk-source-website-url="https://droneblocks.io/why-unitree-go2-quadrupeds-are-transforming-classrooms-and-advanced-robotic-labs-worldwide/?srsltid=AfmBOoqQDccU7RAUy4B6NbrEJg-Ol2SY8yjkYTyeboIE_CGXQyiYyTyj" data-sk-source-source-id="2013166012411609090" data-cid="UVhru6" style="--sk-source-display-name: &quot;droneblocks.io&quot;;"></em>. For example, it can be trained to recognize specific objects or people, or to follow voice instructions. This AI integration makes the Go2 more interactive and capable of performing higher-level tasks autonomously.<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="This AI integration makes the Go2 more interactive and capable of performing higher-level tasks autonomously." id="skTag-2013165946909442050" class="sk-source-tag" data-sk-source-id="2013165946909442050" data-sk-source-website-name="robozaps.com" data-sk-source-website-url="https://blog.robozaps.com/b/unitree-go1-vs-go2" data-sk-source-source-id="2013165946900774913" data-cid="g5IKVI" style="--sk-source-display-name: &quot;robozaps.com&quot;;"></em></li>
+<li data-cid="fqfdE0"><strong data-cid="cEd8g5">Long Battery Life:</strong> The Go2 has an improved battery system compared to its predecessor. It uses an 8000 mAh battery pack (with an optional 15,000 mAh battery available) that can power the robot for <strong data-cid="OQZTyN">1–2 hours</strong> of continuous operation <em data-ref-id="2013166728211275789" class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-sk-source-id="2013166728211275789" data-sk-source-text="Long Battery Life: The Go2 has an improved battery system compared to its predecessor. It uses an 8000 mAh battery pack (with an optional 15,000 mAh battery available) that can power the robot for 1–2 hours of continuous operation" data-cid="4P1VuV" style="--sk-source-display-name: &quot;amazon.com&quot;;"></em>. The increased battery capacity (up to 15 Ah) is a significant upgrade, allowing for longer missions and more extended usage. This feature is important for applications that require the robot to operate autonomously for extended periods.<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="This feature is important for applications that require the robot to operate autonomously for extended periods." id="skTag-2013166092820889602" class="sk-source-tag" data-sk-source-id="2013166092820889602" data-sk-source-website-name="github.com" data-sk-source-website-url="https://github.com/abizovnuralem/go2_ros2_sdk" data-sk-source-source-id="2013166092808028160" data-cid="KBkWjh" style="--sk-source-display-name: &quot;github.com&quot;;"></em></li>
+<li data-cid="gergLW"><strong data-cid="BpFi59">Customization and Programming:</strong> Unitree provides developers with extensive SDKs and APIs to program the Go2<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="Customization and Programming: Unitree provides developers with extensive SDKs and APIs to program the Go2." id="skTag-2013166092816695310" class="sk-source-tag" data-sk-source-id="2013166092816695310" data-sk-source-website-name="github.com" data-sk-source-website-url="https://github.com/abizovnuralem/go2_ros2_sdk" data-sk-source-source-id="2013166092808028160" data-cid="oAf5jL" style="--sk-source-display-name: &quot;github.com&quot;;"></em>. The <strong data-cid="loZ7Ce">Unitree SDK</strong> is a comprehensive toolkit that allows custom applications to be developed for the Go2 <em data-ref-id="2013166728211275790" data-sk-source-text="Customization and Programming: Unitree provides developers with extensive SDKs and APIs to program the Go2. The Unitree SDK is a comprehensive toolkit that allows custom applications to be developed for the Go2" class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-sk-source-id="2013166728211275790" data-cid="aXkFz8" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>. It includes libraries for motor control, high-level motion control, and even reinforcement learning algorithms. The SDK is well-documented, and Unitree offers sample code and tutorials to help developers get started. This openness means researchers and hobbyists can build on the Go2’s capabilities, integrating it with other systems or developing new behaviors. The Go2 is also compatible with ROS (Robot Operating System), which further enhances its flexibility and integration potential.</li>
+<li data-cid="FjnY0f"><strong data-cid="r7mCUw">Wireless Control and Connectivity:</strong> The Go2 can be controlled remotely via a smartphone app or a wireless controller. It supports both Wi-Fi and Bluetooth connections, enabling easy setup and control from a distance. The robot can also connect to a network (via Wi-Fi) to send data to a server or receive updates<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The robot can also connect to a network (via Wi-Fi) to send data to a server or receive updates." id="skTag-2013165983044870166" class="sk-source-tag" data-sk-source-id="2013165983044870166" data-sk-source-website-name="quadruped.de" data-sk-source-website-url="https://www.docs.quadruped.de/projects/go2/html/controller.html" data-sk-source-source-id="2013165983030509568" data-cid="RkjvQY" style="--sk-source-display-name: &quot;quadruped.de&quot;;"></em>. This connectivity is useful for applications like remote monitoring or autonomous navigation in a larger system.</li>
+<li data-cid="dPnlcp"><strong data-cid="Y26JVA">Robust Design:</strong> Despite its agility, the Go2 is built to be durable. Its body is made of lightweight yet strong materials, and it has a modular design for easy maintenance. The motors are designed to be efficient and can handle the rigors of continuous use. The robot’s control system is redundant in some aspects (e.g. multiple IMUs for stability, multiple communication paths) to ensure reliability. These features contribute to the Go2’s robust performance in various environments.<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="These features contribute to the Go2’s robust performance in various environments." id="skTag-2013165946837504000" class="sk-source-tag" data-sk-source-id="2013165946837504000" data-sk-source-website-name="unitree.com" data-sk-source-website-url="https://support.unitree.com/home/en/developer/Quick_start" data-sk-source-source-id="2013165946829471748" data-cid="4KmhnF" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em></li>
+</ul>
+<p data-cid="KVnAvh">These features make the Unitree Go2 a versatile and capable quadruped robot<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="These features make the Unitree Go2 a versatile and capable quadruped robot." id="skTag-2013166012417581058" class="sk-source-tag" data-sk-source-id="2013166012417581058" data-sk-source-website-name="droneblocks.io" data-sk-source-website-url="https://droneblocks.io/why-unitree-go2-quadrupeds-are-transforming-classrooms-and-advanced-robotic-labs-worldwide/?srsltid=AfmBOoqQDccU7RAUy4B6NbrEJg-Ol2SY8yjkYTyeboIE_CGXQyiYyTyj" data-sk-source-source-id="2013166012411609090" data-cid="KF5hPS" style="--sk-source-display-name: &quot;droneblocks.io&quot;;"></em>. Whether used for research, education, or entertainment, the Go2’s combination of mobility, intelligence, and programmability allows it to perform a wide range of tasks autonomously. The following chart summarizes some of the key performance metrics that highlight the Go2's capabilities.</p>
+<div class="chart-wrapper" id="chart2" data-cid="wpqVVR" style="user-select: none; position: relative;" _echarts_instance_="ec_1768811815607"><div style="position: relative; width: 706px; height: 450px; padding: 0px; margin: 0px; border-width: 0px;" data-cid="ew2VMQ"><canvas style="position: absolute; left: 0px; top: 0px; width: 706px; height: 450px; user-select: none; padding: 0px; margin: 0px; border-width: 0px;" data-zr-dom-id="zr_0" width="706" height="450" data-cid="RkqLbh"></canvas></div><div class="editor-empty-block" data-cid="Gq_-Qy"></div></div>
+<div class="data-source" data-cid="WBqYEv">Data Source: <em data-ref-id="2013166728211275791" data-skywork="text_badge" data-sk-source-type="model" data-sk-source-id="2013166728211275791" data-sk-source-text="Data Source:" class="sk-source-tag" data-cid="H4dXpn" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>, <em data-ref-id="2013166728211275792" data-cid="pK2Ek6"></em>, <em data-ref-id="2013166728211275793" data-sk-source-id="2013166728211275793" data-sk-source-text="," class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-cid="k0Epes" style="--sk-source-display-name: &quot;amazon.com&quot;;"></em>, <em data-ref-id="2013166728211275794" data-sk-source-id="2013166728211275794" data-sk-source-text="," class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-cid="3tuvps" style="--sk-source-display-name: &quot;robozaps.com&quot;;"></em></div>
+<h2 id="section-core-scientific-and-academic-concepts" data-cid="sxgGRQ">Core Scientific and Academic Concepts</h2>
+<p data-cid="0CRdb8">Developing and using the Unitree Go2 involves understanding several core scientific and academic concepts from fields like robotics, control theory, and artificial intelligence. Here are some of the key concepts:</p>
+<ul data-cid="pTJh3t">
+<li data-cid="7cRXr3"><strong data-cid="1XylR4">Legged Locomotion:</strong> Legged locomotion is the study of how multi-legged robots move. It involves concepts like gait generation (walking, running, hopping), stability control (ensuring the robot doesn’t fall), and inverse kinematics (computing joint angles to achieve a desired body position). The Unitree Go2’s motion control is based on these principles, with algorithms that generate stable gaits and adjust the robot’s posture. Academic research in legged locomotion has led to advanced techniques (e.g. Zero-Moment Point (ZMP) control, dynamic balance control) that the Go2’s software employs to walk on various terrains.</li>
+<li data-cid="Iy8MgD"><strong data-cid="V2hUW2">Control Theory:</strong> Control theory is fundamental to the robot’s operation. The Go2 uses control algorithms at both low and high levels<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The Go2 uses control algorithms at both low and high levels." id="skTag-2013165946909442051" class="sk-source-tag" data-sk-source-id="2013165946909442051" data-sk-source-website-name="mybotshop.de" data-sk-source-website-url="https://forum.mybotshop.de/t/unitree-go1-comparing-go1-and-go2/1076" data-sk-source-source-id="2013165946900774914" data-cid="DIqnQ9" style="--sk-source-display-name: &quot;mybotshop.de&quot;;"></em>. At the low level, each joint is controlled by a PID (Proportional-Integral-Derivative) controller or advanced algorithms like FOC (Field-Oriented Control) to maintain position and torque <em data-ref-id="2013166728211275795" class="sk-source-tag" data-skywork="text_badge" data-sk-source-type="model" data-sk-source-id="2013166728211275795" data-sk-source-text="Control Theory: Control theory is fundamental to the robot’s operation. The Go2 uses control algorithms at both low and high levels. At the low level, each joint is controlled by a PID (Proportional-Integral-Derivative) controller or advanced algorithms like FOC (Field-Oriented Control) to maintain position and torque" data-cid="nYLS6M" style="--sk-source-display-name: &quot;unitree.com&quot;;"></em>. At the high level, the motion control uses trajectory planning and feedback control to ensure the robot follows desired paths and maintains balance. Concepts from control theory (state feedback, disturbance rejection, stability analysis) are applied to design these controllers. The Go2’s control system also demonstrates concepts like <strong data-cid="E29LlW">adaptive control</strong> – adjusting control parameters in real-time to handle varying loads or terrain. Understanding control theory is crucial for optimizing the robot’s performance and making it robust to external disturbances.</li>
+<li data-cid="d4fwro"><strong data-cid="pS8Psq">State Estimation and Sensor Fusion:</strong> The Go2’s ability to perceive its state (position, orientation, velocity) is based on state estimation and sensor fusion techniques. An Extended Kalman Filter (EKF) or a complementary filter is used to combine data from the IMU, wheel encoders, and sometimes vision or LiDAR to get an accurate estimate of the robot’s pose. Sensor fusion is a critical technique for enhancing the robustness and accuracy of state estimation in quadruped robots<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="Sensor fusion is a critical technique for enhancing the robustness and accuracy of state estimation in quadruped robots." id="skTag-2013166012341448704" class="sk-source-tag" data-sk-source-id="2013166012341448704" data-sk-source-website-name="jhu.edu" data-sk-source-website-url="https://me.jhu.edu/wp-content/uploads/2024/09/Robotics-Sample-Co-Op-Essay.pdf" data-sk-source-source-id="2013166012336111616" data-cid="iTV7gV" style="--sk-source-display-name: &quot;jhu.edu&quot;;"></em>. By combining data from multiple sensors, the robot can mitigate the noise and errors inherent in any single sensor <em data-ref-id="2013166728211275796" data-skywork="text_badge" data-sk-source-type="model" data-sk-source-id="2013166728211275796" data-sk-source-text="State Estimation and Sensor Fusion: The Go2’s ability to perceive its state (position, orientation, velocity) is based on state estimation and sensor fusion techniques. An Extended Kalman Filter (EKF) or a complementary filter is used to combine data from the IMU, wheel encoders, and sometimes vision or LiDAR to get an accurate estimate of the robot’s pose. Sensor fusion is a critical technique for enhancing the robustness and accuracy of state estimation in quadruped robots. By combining data from multiple sensors, the robot can mitigate the noise and errors inherent in any single sensor" class="sk-source-tag" data-cid="zm7jI6" style="--sk-source-display-name: &quot;jhu.edu&quot;;"></em>. This concept is well-established in robotics and aerospace (for example, INS/GPS integration) and is applied here to legged robots. Researchers have also explored more advanced methods like the <strong data-cid="gdvBAF">Unscented Kalman Filter (UKF)</strong> or <strong data-cid="79GeEn">robust state estimation</strong> algorithms to improve state estimation on the Go2 <em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="Researchers have also explored more advanced methods like the Unscented Kalman Filter (UKF) or robust state estimation algorithms to improve state estimation on the Go2 ." id="skTag-2013166297409462343" class="sk-source-tag" data-sk-source-id="2013166297409462343" data-sk-source-website-name="arxiv.org" data-sk-source-website-url="https://arxiv.org/html/2411.11483v1" data-sk-source-source-id="2013166297393594368" data-cid="9ipu2C" style="--sk-source-display-name: &quot;arxiv.org&quot;;"></em>. A thesis on the Unitree GO2 robot demonstrated that a novel <strong data-cid="1HlEDa">Dual Beta Kalman Filter</strong> significantly outperforms state-of-the-art methods in proprioceptive state estimation <em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="A thesis on the Unitree GO2 robot demonstrated that a novel Dual Beta Kalman Filter significantly outperforms state-of-the-art methods in proprioceptive state estimation ." id="skTag-2013166092893691925" class="sk-source-tag" data-sk-source-id="2013166092893691925" data-sk-source-website-name="arxiv.org" data-sk-source-website-url="https://arxiv.org/abs/2411.11483" data-sk-source-source-id="2013166092883525632" data-cid="ZvaOpF" style="--sk-source-display-name: &quot;arxiv.org&quot;;"></em>. This shows the importance of advanced state estimation techniques in legged robotics.<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="This shows the importance of advanced state estimation techniques in legged robotics." id="skTag-2013166297409462312" class="sk-source-tag" data-sk-source-id="2013166297409462312" data-sk-source-website-name="arxiv.org" data-sk-source-website-url="https://arxiv.org/html/2411.11483v1" data-sk-source-source-id="2013166297393594368" data-cid="ofcZB1" style="--sk-source-display-name: &quot;arxiv.org&quot;;"></em></li>
+<li data-cid="2BHuGD"><strong data-cid="hMVVZv">Perception and Computer Vision:</strong> The Go2’s sensors feed into perception algorithms that enable it to “see” and understand its environment. Key concepts here include <strong data-cid="EzJGzj">object detection</strong>, <strong data-cid="RWzWnb">SLAM (Simultaneous Localization and Mapping)</strong>, and <strong data-cid="cdlgDL">machine learning for perception</strong>. The LiDAR provides a point cloud of the environment, which can be processed to build a map (SLAM) and to detect obstacles. Techniques like occupancy grid mapping or voxel grids are used to represent the environment from LiDAR data. The cameras can be used for visual SLAM or for detecting specific objects (using deep learning models for object recognition). The Go2’s AI capabilities tie into this by allowing it to learn from visual data<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The Go2’s AI capabilities tie into this by allowing it to learn from visual data." id="skTag-2013165946909442050" class="sk-source-tag" data-sk-source-id="2013165946909442050" data-sk-source-website-name="robozaps.com" data-sk-source-website-url="https://blog.robozaps.com/b/unitree-go1-vs-go2" data-sk-source-source-id="2013165946900774913" data-cid="kAh5CD" style="--sk-source-display-name: &quot;robozaps.com&quot;;"></em>. For example, it can be trained on a dataset of images to recognize certain objects or people. This use of machine learning in perception is an active area of research and is enabling robots like the Go2 to handle more complex tasks. Concepts from computer vision (image processing, feature extraction, neural networks) are thus central to the robot’s autonomy.</li>
+<li data-cid="axen8f"><strong data-cid="WR4twr">Artificial Intelligence and Machine Learning:</strong> The Go2’s AI features involve several AI concepts. It can be programmed to use machine learning models for tasks like voice recognition, gesture recognition, or autonomous decision-making. This includes <strong data-cid="DlL0pL">deep learning</strong> models (neural networks) that are trained on large datasets. For instance, a convolutional neural network might be trained on images to detect specific objects, or a recurrent neural network might be used for language understanding in voice commands. Reinforcement learning is another concept relevant to the Go2: researchers have used reinforcement learning to train the robot in simulation to perform tasks like walking up stairs or even dancing. Unitree’s open-source repository includes reinforcement learning implementations for their robots <em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="Unitree’s open-source repository includes reinforcement learning implementations for their robots ." id="skTag-2013165946833309697" class="sk-source-tag" data-sk-source-id="2013165946833309697" data-sk-source-website-name="github.com" data-sk-source-website-url="https://github.com/unitreerobotics" data-sk-source-source-id="2013165946829471745" data-cid="esTGai" style="--sk-source-display-name: &quot;github.com&quot;;"></em>. The Go2’s AI module can execute these learned policies in real-time<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The Go2’s AI module can execute these learned policies in real-time." id="skTag-2013166012341448706" class="sk-source-tag" data-sk-source-id="2013166012341448706" data-sk-source-website-name="springer.com" data-sk-source-website-url="https://link.springer.com/content/pdf/10.1007/978-981-96-0789-1_6.pdf?pdf=inline%20link" data-sk-source-source-id="2013166012336111617" data-cid="xgKs6v" style="--sk-source-display-name: &quot;springer.com&quot;;"></em>. Understanding AI and machine learning is important for developers who want to extend the robot’s capabilities or train it for new behaviors. It also ties into the concept of <strong data-cid="9pJMpq">embodied AI</strong>, where AI algorithms are integrated with a physical robot to enable intelligent interaction with the world.</li>
+<li data-cid="2Pbotp"><strong data-cid="1lmC9i">Real-Time Systems and Robotics:</strong> The Go2 operates in real-time, meaning control actions must be computed and executed within strict time limits. This brings in concepts from real-time systems engineering. The robot’s software must be scheduled such that critical tasks (like motor control loops) have guaranteed execution times. Techniques such as hard real-time operating systems, preemption, and rate-monotonic scheduling are employed to ensure the robot’s stability. The Go2’s use of an RTOS and real-time communication buses is a practical application of these concepts<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The Go2’s use of an RTOS and real-time communication buses is a practical application of these concepts." id="skTag-2013166297319874565" class="sk-source-tag" data-sk-source-id="2013166297319874565" data-sk-source-website-name="github.com" data-sk-source-website-url="https://github.com/unitreerobotics/unitree_ros2" data-sk-source-source-id="2013166297309708288" data-cid="RnGhHG" style="--sk-source-display-name: &quot;github.com&quot;;"></em>. Additionally, the concept of <strong data-cid="tm0zxq">fault tolerance</strong> is important – if a sensor or process fails, the system should degrade gracefully. The modular design and redundancy in the Go2’s architecture (multiple IMUs, multiple motor controllers) are designed to handle such failures, which is a key aspect of real-time robotics reliability.</li>
+<li data-cid="iYmSAy"><strong data-cid="kpEdFX">System Integration and Software Architecture:</strong> Building a robot like the Go2 requires integrating hardware and software components from various disciplines. This involves understanding system integration, middleware, and software architecture concepts. The Go2 uses middleware like ROS or its own SDK to communicate between different software modules<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="The Go2 uses middleware like ROS or its own SDK to communicate between different software modules." id="skTag-2013166328746295298" class="sk-source-tag" data-sk-source-id="2013166328746295298" data-sk-source-website-name="github.com" data-sk-source-website-url="https://github.com/abizovnuralem/go2_ros2_sdk" data-sk-source-source-id="2013166328737628161" data-cid="1fqgTL" style="--sk-source-display-name: &quot;github.com&quot;;"></em>. Concepts such as message passing, publish-subscribe systems, and service-oriented architectures are used to coordinate the robot’s behavior. The idea of bounded contexts (discussed earlier) comes from software architecture patterns (like Domain-Driven Design) to keep different parts of the system independent. Additionally, the concept of <strong data-cid="QFNOfy">robot operating system (ROS)</strong> is relevant if one is developing applications on top of the Go2. ROS provides a framework for developing complex robot applications by dividing tasks into nodes that communicate via topics. While the Go2’s internal architecture is proprietary<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="While the Go2’s internal architecture is proprietary," id="skTag-2013165946909442051" class="sk-source-tag" data-sk-source-id="2013165946909442051" data-sk-source-website-name="mybotshop.de" data-sk-source-website-url="https://forum.mybotshop.de/t/unitree-go1-comparing-go1-and-go2/1076" data-sk-source-source-id="2013165946900774914" data-cid="JjNPy1" style="--sk-source-display-name: &quot;mybotshop.de&quot;;"></em>, understanding ROS can help in integrating the Go2 with external systems or developing custom software for it.<em data-skywork="text_badge" data-sk-source-type="web_search" data-sk-source-text="understanding ROS can help in integrating the Go2 with external systems or developing custom software for it." id="skTag-2013166130547466240" class="sk-source-tag" data-sk-source-id="2013166130547466240" data-sk-source-website-name="github.com" data-sk-source-website-url="https://github.com/unitreerobotics/unitree_ros2" data-sk-source-source-id="2013166130544181248" data-cid="gIpude" style="--sk-source-display-name: &quot;github.com&quot;;"></em></li>
+</ul>
+<p data-cid="vLj20r">In summary, the Unitree Go2 is a practical implementation of many academic concepts in robotics and AI. Developers and researchers using the Go2 will benefit from a strong foundation in control theory, sensor fusion, legged locomotion, and AI. These concepts not only explain how the robot works but also provide a framework for improving and extending its capabilities. The Go2 serves as a testbed for exploring these academic ideas in a real-world, dynamic environment, making it a valuable tool for both learning and cutting-edge research in robotics.</p>
+<div class="reference-container" data-cid="WEmDGb">
+			<div class="reference-section" data-cid="xAzl6J">
+				<h3 class="reference-title" data-cid="e5BV0R">Reference</h3>
+				<div class="reference-list" data-cid="xN4QvQ">
+					
+					<div class="reference-item" data-cid="Gi4c5S">
+						<span class="reference-number" data-cid="lfrjuy">[1]</span>
+						<div class="reference-content" data-cid="sM2oCN">
+							<div class="reference-text-container" data-cid="2SvAo9">
+								<span class="reference-text" data-cid="7iRCLQ">[Unitree Go1] Comparing Go1 and Go2 - Robot Forum</span>
+									
+							</div>
+							<a href="https://forum.mybotshop.de/t/unitree-go1-comparing-go1-and-go2/1076" class="reference-link" target="_blank" data-cid="POx0YW">
+								https://forum.mybotshop.de/t/unitree-go1-comparing-go1-and-go2/1076
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="yEVT9T">
+						<span class="reference-number" data-cid="w9VNK7">[2]</span>
+						<div class="reference-content" data-cid="Yq7Gc4">
+							<div class="reference-text-container" data-cid="Cxi7yA">
+								<span class="reference-text" data-cid="dmbf9L">Unitree Robotics</span>
+									
+							</div>
+							<a href="https://www.unitree.com/" class="reference-link" target="_blank" data-cid="2xBGh5">
+								https://www.unitree.com/
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="RrkDYA">
+						<span class="reference-number" data-cid="E2Xemc">[3]</span>
+						<div class="reference-content" data-cid="8wm57q">
+							<div class="reference-text-container" data-cid="Ez9VOZ">
+								<span class="reference-text" data-cid="AeTDHd">unitreerobotics/unitree_ros2</span>
+									
+							</div>
+							<a href="https://github.com/unitreerobotics/unitree_ros2" class="reference-link" target="_blank" data-cid="qmqlPq">
+								https://github.com/unitreerobotics/unitree_ros2
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="uLrByu">
+						<span class="reference-number" data-cid="J2M0o3">[4]</span>
+						<div class="reference-content" data-cid="K89u54">
+							<div class="reference-text-container" data-cid="vkfkSK">
+								<span class="reference-text" data-cid="nSyfio">ENHANCED STATE ESTIMATION USING DEEP LEARNING ...</span>
+									
+							</div>
+							<a href="https://me.jhu.edu/wp-content/uploads/2024/09/Robotics-Sample-Co-Op-Essay.pdf" class="reference-link" target="_blank" data-cid="tV7mjk">
+								https://me.jhu.edu/wp-content/uploads/2024/09/Robotics-Sample-Co-Op-Essay.pdf
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="KWnFaR">
+						<span class="reference-number" data-cid="r3UH22">[5]</span>
+						<div class="reference-content" data-cid="0CgAX0">
+							<div class="reference-text-container" data-cid="x83JFr">
+								<span class="reference-text" data-cid="yOFcG7">Multi-sensor Fusion Localization and Terrain Reconstruction ...</span>
+									
+							</div>
+							<a href="https://link.springer.com/content/pdf/10.1007/978-981-96-0789-1_6.pdf?pdf=inline%20link" class="reference-link" target="_blank" data-cid="TPX4yt">
+								https://link.springer.com/content/pdf/10.1007/978-981-96-0789-1_6.pdf?pdf=inline%20link
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="35SiSb">
+						<span class="reference-number" data-cid="egCTjm">[6]</span>
+						<div class="reference-content" data-cid="mVk42Q">
+							<div class="reference-text-container" data-cid="auuHYN">
+								<span class="reference-text" data-cid="ZMO6up">Robust State Estimation for Legged Robots with Dual Beta ...</span>
+									
+							</div>
+							<a href="https://arxiv.org/html/2411.11483v1" class="reference-link" target="_blank" data-cid="0qGNxS">
+								https://arxiv.org/html/2411.11483v1
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="E1uAbK">
+						<span class="reference-number" data-cid="N08arV">[7]</span>
+						<div class="reference-content" data-cid="JoQy0V">
+							<div class="reference-text-container" data-cid="8bDRwl">
+								<span class="reference-text" data-cid="ybkIXl">Determine Orientation Using Inertial Sensors - MATLAB &amp; ...</span>
+									
+							</div>
+							<a href="https://www.mathworks.com/help/fusion/gs/determine-orientation-through-sensor-fusion.html" class="reference-link" target="_blank" data-cid="1rCxWC">
+								https://www.mathworks.com/help/fusion/gs/determine-orientation-through-sensor-fusion.html
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="iwJPgZ">
+						<span class="reference-number" data-cid="eFNHnr">[8]</span>
+						<div class="reference-content" data-cid="APTbJc">
+							<div class="reference-text-container" data-cid="PhcBEk">
+								<span class="reference-text" data-cid="DyLGtl">unitreerobotics/unitree_ros2</span>
+									
+							</div>
+							<a href="https://github.com/unitreerobotics/unitree_ros2" class="reference-link" target="_blank" data-cid="u0t6If">
+								https://github.com/unitreerobotics/unitree_ros2
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="VgKfV1">
+						<span class="reference-number" data-cid="PRvrWw">[9]</span>
+						<div class="reference-content" data-cid="OMcGZL">
+							<div class="reference-text-container" data-cid="8x3AKO">
+								<span class="reference-text" data-cid="oB5P5p">Manuals | Unitree GO2 - QRE DOCS</span>
+									
+							</div>
+							<a href="https://www.docs.quadruped.de/projects/go2/html/controller.html" class="reference-link" target="_blank" data-cid="U5VGoL">
+								https://www.docs.quadruped.de/projects/go2/html/controller.html
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="5dEy6W">
+						<span class="reference-number" data-cid="SDtIwU">[10]</span>
+						<div class="reference-content" data-cid="St9Ti7">
+							<div class="reference-text-container" data-cid="4YXxJs">
+								<span class="reference-text" data-cid="slFwdw">Go2 SDK Development Guide</span>
+									
+							</div>
+							<a href="https://support.unitree.com/home/en/developer/Obtain%20SDK" class="reference-link" target="_blank" data-cid="FP04Vf">
+								https://support.unitree.com/home/en/developer/Obtain%20SDK
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="954uA0">
+						<span class="reference-number" data-cid="Tc410W">[11]</span>
+						<div class="reference-content" data-cid="3GNc9E">
+							<div class="reference-text-container" data-cid="hXUZVR">
+								<span class="reference-text" data-cid="lkNRb5">Unofficial ROS2 SDK support for Unitree GO2 AIR/PRO/EDU</span>
+									
+							</div>
+							<a href="https://github.com/abizovnuralem/go2_ros2_sdk" class="reference-link" target="_blank" data-cid="y6KpLc">
+								https://github.com/abizovnuralem/go2_ros2_sdk
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="Pm5IqB">
+						<span class="reference-number" data-cid="E3ju4T">[12]</span>
+						<div class="reference-content" data-cid="cXKBiD">
+							<div class="reference-text-container" data-cid="wO02ok">
+								<span class="reference-text" data-cid="hYOIcR">Field Oriented Control (FOC) - A Deep Dive</span>
+									
+							</div>
+							<a href="https://www.pmdcorp.com/resources/type/articles/get/field-oriented-control-foc-a-deep-dive-article" class="reference-link" target="_blank" data-cid="UZD5DN">
+								https://www.pmdcorp.com/resources/type/articles/get/field-oriented-control-foc-a-deep-dive-article
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="FlUYlW">
+						<span class="reference-number" data-cid="RiJlL1">[13]</span>
+						<div class="reference-content" data-cid="ZMZx7F">
+							<div class="reference-text-container" data-cid="OcamCM">
+								<span class="reference-text" data-cid="biBIN1">"Drone Dog" Added As Newest Member Of Enfield Police ...</span>
+									
+							</div>
+							<a href="https://www.reddit.com/r/Connecticut/comments/1mvj6mq/drone_dog_added_as_newest_member_of_enfield/" class="reference-link" target="_blank" data-cid="fTY2JZ">
+								https://www.reddit.com/r/Connecticut/comments/1mvj6mq/drone_dog_added_as_newest_member_of_enfield/
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="k2EhlL">
+						<span class="reference-number" data-cid="pHAme2">[14]</span>
+						<div class="reference-content" data-cid="bUKzLq">
+							<div class="reference-text-container" data-cid="nRnQ6I">
+								<span class="reference-text" data-cid="kalsMh">Unitree Go2</span>
+									
+							</div>
+							<a href="https://www.roboworks.net/store/p/unitree-go2" class="reference-link" target="_blank" data-cid="h6Ni7L">
+								https://www.roboworks.net/store/p/unitree-go2
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="NjVILm">
+						<span class="reference-number" data-cid="hL7PKA">[15]</span>
+						<div class="reference-content" data-cid="FY49mA">
+							<div class="reference-text-container" data-cid="UkH34z">
+								<span class="reference-text" data-cid="PakvGM">Manuals | Unitree GO2 - QRE DOCS</span>
+									
+							</div>
+							<a href="https://www.docs.quadruped.de/projects/go2/html/controller.html" class="reference-link" target="_blank" data-cid="IGqOS5">
+								https://www.docs.quadruped.de/projects/go2/html/controller.html
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="LXZRFY">
+						<span class="reference-number" data-cid="oy8X9o">[16]</span>
+						<div class="reference-content" data-cid="zr7dYw">
+							<div class="reference-text-container" data-cid="th4l1E">
+								<span class="reference-text" data-cid="UrJxOx">Unitree Go2 Quadrupedal Robotics</span>
+									
+							</div>
+							<a href="https://www.unboxindustry.com/blog/125-unitree-go2-quadrupedal-robotics?srsltid=AfmBOoomy8un9F634npv2dlAKN_HeEr41VhsJxuFRPacgQNLnoRSq7t1" class="reference-link" target="_blank" data-cid="hINr7D">
+								https://www.unboxindustry.com/blog/125-unitree-go2-quadrupedal-robotics?srsltid=AfmBOoomy8un9F634npv2dlAKN_HeEr41VhsJxuFRPacgQNLnoRSq7t1
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="fdzIUm">
+						<span class="reference-number" data-cid="TuJeEB">[17]</span>
+						<div class="reference-content" data-cid="dcC6UG">
+							<div class="reference-text-container" data-cid="6CKuAl">
+								<span class="reference-text" data-cid="4tmGIZ">Robot Dog Go2_Quadruped_Robot Dog Company</span>
+									
+							</div>
+							<a href="https://www.unitree.com/go2" class="reference-link" target="_blank" data-cid="srnNf5">
+								https://www.unitree.com/go2
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="nVFAV4">
+						<span class="reference-number" data-cid="nsGM9C">[18]</span>
+						<div class="reference-content" data-cid="TFpTDG">
+							<div class="reference-text-container" data-cid="6Xbt0H">
+								<span class="reference-text" data-cid="L0hNeE">Why Unitree Go2 Quadrupeds are Transforming ...</span>
+									
+							</div>
+							<a href="https://droneblocks.io/why-unitree-go2-quadrupeds-are-transforming-classrooms-and-advanced-robotic-labs-worldwide/?srsltid=AfmBOoqQDccU7RAUy4B6NbrEJg-Ol2SY8yjkYTyeboIE_CGXQyiYyTyj" class="reference-link" target="_blank" data-cid="Xbj6qU">
+								https://droneblocks.io/why-unitree-go2-quadrupeds-are-transforming-classrooms-and-advanced-robotic-labs-worldwide/?srsltid=AfmBOoqQDccU7RAUy4B6NbrEJg-Ol2SY8yjkYTyeboIE_CGXQyiYyTyj
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="eMugAq">
+						<span class="reference-number" data-cid="Z1HPFY">[19]</span>
+						<div class="reference-content" data-cid="LYQW01">
+							<div class="reference-text-container" data-cid="atSGJt">
+								<span class="reference-text" data-cid="1Ba7z8">Unitree Go1 vs. Go2: Which Robot Dog is Best for You?</span>
+									
+							</div>
+							<a href="https://blog.robozaps.com/b/unitree-go1-vs-go2" class="reference-link" target="_blank" data-cid="FOwqlH">
+								https://blog.robozaps.com/b/unitree-go1-vs-go2
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="HygxtI">
+						<span class="reference-number" data-cid="Wck6AU">[20]</span>
+						<div class="reference-content" data-cid="2K93dl">
+							<div class="reference-text-container" data-cid="LT6Ran">
+								<span class="reference-text" data-cid="ylK3w2">Go2 SDK Development Guide</span>
+									
+							</div>
+							<a href="https://support.unitree.com/home/en/developer/Quick_start" class="reference-link" target="_blank" data-cid="TNeh7m">
+								https://support.unitree.com/home/en/developer/Quick_start
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="CCEn8G">
+						<span class="reference-number" data-cid="KoVdeO">[21]</span>
+						<div class="reference-content" data-cid="1FDdGY">
+							<div class="reference-text-container" data-cid="mLZLJ0">
+								<span class="reference-text" data-cid="gDHiFh">ENHANCED STATE ESTIMATION USING DEEP LEARNING ...</span>
+									
+							</div>
+							<a href="https://me.jhu.edu/wp-content/uploads/2024/09/Robotics-Sample-Co-Op-Essay.pdf" class="reference-link" target="_blank" data-cid="ShaFII">
+								https://me.jhu.edu/wp-content/uploads/2024/09/Robotics-Sample-Co-Op-Essay.pdf
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="GZjKaq">
+						<span class="reference-number" data-cid="PQp9UT">[22]</span>
+						<div class="reference-content" data-cid="ConTNu">
+							<div class="reference-text-container" data-cid="SyJ4oK">
+								<span class="reference-text" data-cid="ybTOl6">Robust State Estimation for Legged Robots with Dual Beta ...</span>
+									
+							</div>
+							<a href="https://arxiv.org/abs/2411.11483" class="reference-link" target="_blank" data-cid="xUENGF">
+								https://arxiv.org/abs/2411.11483
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="Oacb7f">
+						<span class="reference-number" data-cid="dGrhFx">[23]</span>
+						<div class="reference-content" data-cid="BwTLo8">
+							<div class="reference-text-container" data-cid="XO70WY">
+								<span class="reference-text" data-cid="zVJQWa">Unitree Robotics</span>
+									
+							</div>
+							<a href="https://github.com/unitreerobotics" class="reference-link" target="_blank" data-cid="x16JRt">
+								https://github.com/unitreerobotics
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="sdVaSd">
+						<span class="reference-number" data-cid="OXFgWy">[24]</span>
+						<div class="reference-content" data-cid="fpXsoI">
+							<div class="reference-text-container" data-cid="f9cDEV">
+								<span class="reference-text" data-cid="UbemjO">unitreerobotics/unitree_ros2</span>
+									
+							</div>
+							<a href="https://github.com/unitreerobotics/unitree_ros2" class="reference-link" target="_blank" data-cid="eDLOG0">
+								https://github.com/unitreerobotics/unitree_ros2
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="EDChRW">
+						<span class="reference-number" data-cid="Rddlf3">[25]</span>
+						<div class="reference-content" data-cid="xVAQGq">
+							<div class="reference-text-container" data-cid="XN6dVf">
+								<span class="reference-text" data-cid="y2yJmY">Unofficial ROS2 SDK support for Unitree GO2 AIR/PRO/EDU</span>
+									
+							</div>
+							<a href="https://github.com/abizovnuralem/go2_ros2_sdk" class="reference-link" target="_blank" data-cid="Dblhhy">
+								https://github.com/abizovnuralem/go2_ros2_sdk
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="RCF3OP">
+						<span class="reference-number" data-cid="ZsKQvF">[26]</span>
+						<div class="reference-content" data-cid="G6uwXs">
+							<div class="reference-text-container" data-cid="812Edk">
+								<span class="reference-text" data-cid="UKN6Xo">unitreerobotics/unitree_ros2</span>
+									
+							</div>
+							<a href="https://github.com/unitreerobotics/unitree_ros2" class="reference-link" target="_blank" data-cid="fzbepu">
+								https://github.com/unitreerobotics/unitree_ros2
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="TZCyju">
+						<span class="reference-number" data-cid="iRm26d">[27]</span>
+						<div class="reference-content" data-cid="dxWm34">
+							<div class="reference-text-container" data-cid="OoyIdn">
+								<span class="reference-text" data-cid="vhoDr2">How We Gave Life to an AI Agent with the Unitree Go2 Robot</span>
+									
+							</div>
+							<a href="https://wso2.com/library/blogs/how-we-gave-life-to-an-ai-agent-with-unitree-go2-robot/" class="reference-link" target="_blank" data-cid="attOms">
+								https://wso2.com/library/blogs/how-we-gave-life-to-an-ai-agent-with-unitree-go2-robot/
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="CG7wUD">
+						<span class="reference-number" data-cid="HSxBfh">[28]</span>
+						<div class="reference-content" data-cid="WOBtIF">
+							<div class="reference-text-container" data-cid="IZfBAO">
+								<span class="reference-text" data-cid="hfkIRY">Motor SDK Development Guide</span>
+									
+							</div>
+							<a href="https://support.unitree.com/home/en/Motor_SDK_Dev_Guide" class="reference-link" target="_blank" data-cid="MQbQsq">
+								https://support.unitree.com/home/en/Motor_SDK_Dev_Guide
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="1E0zvk">
+						<span class="reference-number" data-cid="XmAKQF">[29]</span>
+						<div class="reference-content" data-cid="XtOKhH">
+							<div class="reference-text-container" data-cid="XMzP0I">
+								<span class="reference-text" data-cid="9XttFb">Unitree Go2 Motor Teardown</span>
+									
+							</div>
+							<a href="https://www.simplexitypd.com/blog/unitree-go2-motor-teardown/" class="reference-link" target="_blank" data-cid="9Q3L4k">
+								https://www.simplexitypd.com/blog/unitree-go2-motor-teardown/
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="hJbe7Y">
+						<span class="reference-number" data-cid="VYdA7a">[30]</span>
+						<div class="reference-content" data-cid="OLYTWK">
+							<div class="reference-text-container" data-cid="RNu1aZ">
+								<span class="reference-text" data-cid="xQLV5I">GO2 Steamdeck | Unitree GO2 - QRE DOCS</span>
+									
+							</div>
+							<a href="https://www.docs.quadruped.de/projects/go2/html/go2-steamdeck.html" class="reference-link" target="_blank" data-cid="yJQfdi">
+								https://www.docs.quadruped.de/projects/go2/html/go2-steamdeck.html
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="6LBF6Q">
+						<span class="reference-number" data-cid="PXQ7Fs">[31]</span>
+						<div class="reference-content" data-cid="5NNJJ4">
+							<div class="reference-text-container" data-cid="GQlKlw">
+								<span class="reference-text" data-cid="wEaX4f">Unitree Go2 Robot Dog Quadruped Robotics for Adults ...</span>
+									
+							</div>
+							<a href="https://www.amazon.com/Unitree-Quadruped-Robotics-Adults-Embodied/dp/B07TTRPFBT" class="reference-link" target="_blank" data-cid="kvXbVx">
+								https://www.amazon.com/Unitree-Quadruped-Robotics-Adults-Embodied/dp/B07TTRPFBT
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="6dne2v">
+						<span class="reference-number" data-cid="SQblLM">[32]</span>
+						<div class="reference-content" data-cid="IlpVSc">
+							<div class="reference-text-container" data-cid="cQVBQ8">
+								<span class="reference-text" data-cid="7qiMZx">Go2 SDK Development Guide</span>
+									
+							</div>
+							<a href="https://support.unitree.com/home/en/developer" class="reference-link" target="_blank" data-cid="RjABjD">
+								https://support.unitree.com/home/en/developer
+							</a>
+						</div>
+					</div>
+					
+					<div class="reference-item" data-cid="ahXTEe">
+						<span class="reference-number" data-cid="QWMFdk">[33]</span>
+						<div class="reference-content" data-cid="7B7H1c">
+							<div class="reference-text-container" data-cid="EcbMi5">
+								<span class="reference-text" data-cid="ejCoo3">ENHANCED STATE ESTIMATION USING DEEP LEARNING ...</span>
+									
+							</div>
+							<a href="https://me.jhu.edu/wp-content/uploads/2024/09/Robotics-Sample-Co-Op-Essay.pdf" class="reference-link" target="_blank" data-cid="nVDKht">
+								https://me.jhu.edu/wp-content/uploads/2024/09/Robotics-Sample-Co-Op-Essay.pdf
+							</a>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div></div>
+<script data-cid="dTDyTz">
+         document.addEventListener('DOMContentLoaded', function () {
+             // Chart 1: Unitree Go2 Robot Architecture (Graph)
+             var chart1 = echarts.init(document.getElementById('chart1'), 'macarons');
+             var option1 = {
+                 title: {
+                     text: 'Unitree Go2 Robot Architecture',
+                     left: 'center'
+                 },
+                 series: [{
+                     type: 'graph',
+                     layout: 'none',
+                     symbolSize: 100,
+                     roam: false,
+                     label: {
+                         show: true,
+                         fontSize: 12,
+                         color: '#000',
+                         formatter: function(params) {
+                             return params.name.replace(' ', '\n');
+                         }
+                     },
+                     edgeSymbol: ['circle', 'arrow'],
+                     edgeSymbolSize: [4, 10],
+                     data: [
+                         { name: 'Unitree Go2', x: 400, y: 250, symbolSize: 120, itemStyle: { color: '#5ab1ef' } },
+                         { name: 'Motor Controllers', x: 150, y: 150, itemStyle: { color: '#f7bc8b' } },
+                         { name: 'Motion Control', x: 400, y: 150, itemStyle: { color: '#e4989c' } },
+                         { name: 'Perception', x: 650, y: 150, itemStyle: { color: '#8d98b3' } },
+                         { name: 'AI & Computation', x: 400, y: 350, itemStyle: { color: '#f6d677' } },
+                         { name: 'Communication', x: 150, y: 350, itemStyle: { color: '#84c2ae' } }
+                     ],
+                     links: [
+                         { source: 'Motor Controllers', target: 'Unitree Go2' },
+                         { source: 'Motion Control', target: 'Unitree Go2' },
+                         { source: 'Perception', target: 'Unitree Go2' },
+                         { source: 'AI & Computation', target: 'Unitree Go2' },
+                         { source: 'Communication', target: 'Unitree Go2' }
+                     ]
+                 }],
+                 animation: false
+             };
+             chart1.setOption(option1);
+             // Chart 2: Unitree Go2 Key Performance Metrics (Bar)
+             var chart2 = echarts.init(document.getElementById('chart2'), 'macarons');
+             var option2 = {
+                 title: {
+                     text: 'Unitree Go2 Key Performance Metrics',
+                     left: 'center'
+                 },
+                 tooltip: {
+                     trigger: 'axis',
+                     axisPointer: { type: 'shadow' }
+                 },
+                 grid: {
+                     left: '3%',
+                     right: '4%',
+                     bottom: '3%',
+                     containLabel: true
+                 },
+                 xAxis: {
+                     type: 'value',
+                     boundaryGap: [0, 0.01],
+                     axisLabel: {
+                         formatter: '{value}'
+                     }
+                 },
+                 yAxis: {
+                     type: 'category',
+                     data: ['Max Joint Torque (N·m)', 'Top Speed (m/s)', 'Battery Capacity (Ah)', 'Obstacle Avoidance Efficiency (%)'],
+                     axisLabel: {
+                         interval: 0,
+                         rotate: 0
+                     }
+                 },
+                 series: [{
+                     name: 'Performance',
+                     type: 'bar',
+                     data: [
+                         { value: 45, itemStyle: { color: '#2ec7c9' } },
+                         { value: 2.5, itemStyle: { color: '#b6a2de' } },
+                         { value: 8.0, itemStyle: { color: '#5ab1ef' } },
+                         { value: 200, itemStyle: { color: '#f7bc8b' } }
+                     ],
+                     label: {
+                         show: true,
+                         position: 'right',
+                         formatter: function(params) {
+                             if (params.name.includes('Battery Capacity')) return params.value + ' Ah';
+                             if (params.name.includes('Obstacle Avoidance')) return params.value + '%';
+                             return params.value + ' N·m';
+                         },
+                         color: '#000'
+                     }
+                 }],
+                 animation: false
+             };
+             chart2.setOption(option2);
+             // Chart 3: Low-Level Motor Control Loop (Graph)
+             var chart3 = echarts.init(document.getElementById('chart3'), 'macarons');
+             var option3 = {
+                 title: {
+                     text: 'Low-Level Motor Control Loop',
+                     left: 'center'
+                 },
+                 series: [{
+                     type: 'graph',
+                     layout: 'none',
+                     symbolSize: 80,
+                     roam: false,
+                     label: {
+                         show: true,
+                         fontSize: 12,
+                         color: '#000',
+                         formatter: '{b}'
+                     },
+                     edgeSymbol: ['circle', 'arrow'],
+                     edgeSymbolSize: [4, 10],
+                     data: [
+                         { name: 'Motor Controller', x: 400, y: 100, itemStyle: { color: '#ab817d' } },
+                         { name: 'Encoder Feedback', x: 200, y: 250, itemStyle: { color: '#7ccbe9' } },
+                         { name: 'Control Algorithm', x: 400, y: 250, itemStyle: { color: '#ddaede' } },
+                         { name: 'Torque/Position Command', x: 600, y: 250, itemStyle: { color: '#f2d9a7' } },
+                         { name: 'Motor (BLDC)', x: 400, y: 400, itemStyle: { color: '#96a2ea' } }
+                     ],
+                     links: [
+                         { source: 'Encoder Feedback', target: 'Motor Controller' },
+                         { source: 'Motor Controller', target: 'Control Algorithm' },
+                         { source: 'Control Algorithm', target: 'Torque/Position Command' },
+                         { source: 'Torque/Position Command', target: 'Motor (BLDC)' },
+                         { source: 'Motor (BLDC)', target: 'Encoder Feedback', lineStyle: { curveness: 0.2 } }
+                     ]
+                 }],
+                 animation: false
+             };
+             chart3.setOption(option3);
+             // Resize charts on window resize
+             window.addEventListener('resize', function () {
+                 chart1.resize();
+                 chart2.resize();
+                 chart3.resize();
+             });
+         });
+</script>
+
+
+</body></html>
